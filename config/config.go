@@ -7,7 +7,7 @@ import (
 )
 
 type Config struct {
-	BotToken string `env:"BOT_TOKEN" env-required:"true"`
+	BotToken string `env:"TELEGRAM_BOT_TOKEN" env-required:"true"`
 	PgDsn    string `env:"PG_DSN" env-required:"true"`
 }
 
