@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -12,8 +13,13 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file")
+	}
+
 	var cfg Config
-	err := cleanenv.ReadEnv(&cfg)
+	err = cleanenv.ReadEnv(&cfg)
 	if err != nil {
 		return nil, err
 	}

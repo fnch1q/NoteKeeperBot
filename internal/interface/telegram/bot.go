@@ -1,27 +1,24 @@
-package bot
+package telegram
 
 import (
 	"NoteKeeperBot/config"
-	"NoteKeeperBot/internal/storage"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type Bot struct {
-	API     *tgbotapi.BotAPI
-	Storage *storage.Storage
+	API *tgbotapi.BotAPI
 }
 
-func NewBot(cfg *config.Config, store *storage.Storage) (*Bot, error) {
+func NewBot(cfg *config.Config) (*Bot, error) {
 	botAPI, err := tgbotapi.NewBotAPI(cfg.BotToken)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Bot{
-		API:     botAPI,
-		Storage: store,
+		API: botAPI,
 	}, nil
 }
 
@@ -35,7 +32,7 @@ func (b *Bot) Start() {
 
 	for update := range updates {
 		if update.Message != nil {
-			// Обработчики команд
+			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 		}
 	}
 }
