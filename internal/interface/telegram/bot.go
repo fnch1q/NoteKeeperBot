@@ -2,37 +2,45 @@ package telegram
 
 import (
 	"NoteKeeperBot/config"
+	"NoteKeeperBot/internal/repo"
+	"NoteKeeperBot/internal/usecase"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"gorm.io/gorm"
 )
 
 type Bot struct {
-	API *tgbotapi.BotAPI
+	api            *tgbotapi.BotAPI
+	messageHandler MessageHandler
 }
 
-func NewBot(cfg *config.Config) (*Bot, error) {
+func NewBot(cfg *config.Config, db *gorm.DB) (*Bot, error) {
 	botAPI, err := tgbotapi.NewBotAPI(cfg.BotToken)
 	if err != nil {
 		return nil, err
 	}
 
+	userRepo := repo.NewUserDB(db)
+	createUserUC := usecase.NewCreateUserUseCase(userRepo)
+
+	messageHandler := NewMessageHandler(createUserUC)
+
 	return &Bot{
-		API: botAPI,
+		api:            botAPI,
+		messageHandler: *messageHandler,
 	}, nil
 }
 
 func (b *Bot) Start() {
-	log.Printf("Authorized on account %s", b.API.Self.UserName)
+	log.Printf("Authorized on account %s", b.api.Self.UserName)
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
-	updates := b.API.GetUpdatesChan(u)
+	updates := b.api.GetUpdatesChan(u)
 
 	for update := range updates {
-		if update.Message != nil {
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-		}
+		b.messageHandler.HandleMessage(update)
 	}
 }

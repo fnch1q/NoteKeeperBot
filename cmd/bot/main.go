@@ -22,7 +22,7 @@ func main() {
 	}
 	_ = db
 
-	bot, err := telegram.NewBot(cfg)
+	bot, err := telegram.NewBot(cfg, db)
 	if err != nil {
 		log.Fatalf("Failed to create bot: %v", err)
 	}

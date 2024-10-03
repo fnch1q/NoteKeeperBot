@@ -4,7 +4,7 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     telegram_id BIGINT NOT NULL,
     username VARCHAR(255) NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    created_date TIMESTAMP NOT NULL DEFAULT NOW()
 );
 -- +goose StatementEnd
 
