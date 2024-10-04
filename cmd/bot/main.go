@@ -14,13 +14,10 @@ func main() {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
-	_ = cfg
-
 	db, err := db.NewPostgresConnection(cfg)
 	if err != nil {
 		log.Fatalf("Failed to connect to DB: %v", err)
 	}
-	_ = db
 
 	bot, err := telegram.NewBot(cfg, db)
 	if err != nil {
