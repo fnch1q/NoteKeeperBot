@@ -8,12 +8,14 @@ import (
 )
 
 type MessageHandler struct {
+	bot               *tgbotapi.BotAPI
 	createUserHandler CreateUserHandler
 }
 
-func NewMessageHandler(createUserUC usecase.CreateUserUseCase) *MessageHandler {
+func NewMessageHandler(bot *tgbotapi.BotAPI, createUserUC usecase.CreateUserUseCase) MessageHandler {
 	createUserHandler := NewCreateUserHandler(createUserUC)
-	return &MessageHandler{
+	return MessageHandler{
+		bot:               bot,
 		createUserHandler: createUserHandler,
 	}
 }

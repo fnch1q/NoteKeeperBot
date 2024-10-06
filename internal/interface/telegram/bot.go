@@ -21,14 +21,19 @@ func NewBot(cfg *config.Config, db *gorm.DB) (*Bot, error) {
 		return nil, err
 	}
 
+	err = SetCommandMenu(botAPI)
+	if err != nil {
+		return nil, err
+	}
+
 	userRepo := repo.NewUserDB(db)
 	createUserUC := usecase.NewCreateUserUseCase(userRepo)
 
-	messageHandler := NewMessageHandler(createUserUC)
+	messageHandler := NewMessageHandler(botAPI, createUserUC)
 
 	return &Bot{
 		api:            botAPI,
-		messageHandler: *messageHandler,
+		messageHandler: messageHandler,
 	}, nil
 }
 
