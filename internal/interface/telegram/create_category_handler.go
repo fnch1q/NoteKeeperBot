@@ -1,7 +1,8 @@
-package telegram //Переделать что то не то
+package telegram
 
 import (
 	"NoteKeeperBot/internal/usecase"
+	"fmt"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -30,7 +31,7 @@ func (h *CreateCategoryHandler) Handle(update tgbotapi.Update) {
 	err := h.uc.CreateCategory(input)
 	if err != nil {
 		log.Printf("Failed to create category: %v", err)
-		h.bot.Send(tgbotapi.NewMessage(chatID, "Ошибка при создании категории."))
+		h.bot.Send(tgbotapi.NewMessage(chatID, fmt.Sprintf("Ошибка при создании категории. %v", err)))
 	} else {
 		log.Printf("Category %s created successfully", input.Name)
 		h.bot.Send(tgbotapi.NewMessage(chatID, "Категория успешно создана!"))

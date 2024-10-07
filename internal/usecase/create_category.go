@@ -31,6 +31,13 @@ func (uc CreateCategoryUseCase) CreateCategory(input CreateCategoryInput) error 
 		return err
 	}
 
+	_, err = uc.categoryRepo.FindByName(user.GetID(), input.Name)
+	if err == nil {
+		return entities.ErrCategoryAlreadyExists
+	} else if err != entities.ErrCategoryNotFound {
+		return err
+	}
+
 	category := entities.NewCategoryCreate(
 		user.GetID(),
 		input.Name,

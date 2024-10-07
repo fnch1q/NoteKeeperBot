@@ -14,11 +14,14 @@ type Category struct {
 
 type CategoryRepository interface {
 	Create(Category Category) error
-	GetAll(user_id uint32) ([]Category, int64, error)
+	Delete(id uint32) error
+	FindAll(user_id uint32) ([]Category, int64, error)
+	FindByName(user_id uint32, name string) (Category, error)
 }
 
 var (
-	ErrCategoryNotFound = errors.New("category not found")
+	ErrCategoryNotFound      = errors.New("category not found")
+	ErrCategoryAlreadyExists = errors.New("category already exists")
 )
 
 func NewCategory(

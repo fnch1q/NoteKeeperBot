@@ -40,7 +40,15 @@ func (u CategoryDB) Create(Category entities.Category) error {
 	return nil
 }
 
-func (u CategoryDB) GetAll(userID uint32) ([]entities.Category, int64, error) {
+func (u CategoryDB) Delete(id uint32) error {
+	if err := u.db.Table(u.tableName).Where("id = ?", id).Delete(&categoryGORM{}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u CategoryDB) FindAll(userID uint32) ([]entities.Category, int64, error) {
 	var categoriesGORM []categoryGORM
 	var total int64
 
@@ -60,4 +68,22 @@ func (u CategoryDB) GetAll(userID uint32) ([]entities.Category, int64, error) {
 	}
 
 	return categories, total, nil
+}
+
+func (u CategoryDB) FindByName(userID uint32, name string) (entities.Category, error) {
+	var categoryGORM categoryGORM
+
+	if err := u.db.Table(u.tableName).Where("user_id = ? AND category_name = ?", userID, name).First(&categoryGORM).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return entities.Category{}, entities.ErrCategoryNotFound
+		}
+		return entities.Category{}, err
+	}
+
+	return entities.NewCategory(
+		categoryGORM.ID,
+		categoryGORM.UserID,
+		categoryGORM.Name,
+		categoryGORM.CreatedDate,
+	), nil
 }

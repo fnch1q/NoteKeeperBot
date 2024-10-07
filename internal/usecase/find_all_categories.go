@@ -19,7 +19,7 @@ func NewFindAllCategoriesUseCase(categoryRepo entities.CategoryRepository) FindA
 }
 
 func (uc FindAllCategoriesUsecase) FindAllCategories(input FindAllCategoriesInput) ([]entities.Category, int64, error) {
-	categories, total, err := uc.categoryRepo.GetAll(input.UserID)
+	categories, total, err := uc.categoryRepo.FindAll(input.UserID)
 	if err != nil {
 		return nil, 0, err
 	}

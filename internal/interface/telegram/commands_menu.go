@@ -17,6 +17,10 @@ func SetCommandMenu(bot *tgbotapi.BotAPI) error {
 			Description: "Добавить категорию",
 		},
 		{
+			Command:     "delete_category",
+			Description: "Удалить категорию",
+		},
+		{
 			Command:     "add_tag",
 			Description: "Добавить тег",
 		},
