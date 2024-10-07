@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type CategoryGORM struct {
+type categoryGORM struct {
 	ID          uint32    `gorm:"primary_key"`
 	UserID      uint32    `gorm:"column:user_id"`
 	Name        string    `gorm:"column:category_name"`
@@ -27,7 +27,7 @@ func NewCategoryDB(db *gorm.DB) CategoryDB {
 }
 
 func (u CategoryDB) Create(Category entities.Category) error {
-	var CategoryGORM = CategoryGORM{
+	var CategoryGORM = categoryGORM{
 		UserID:      Category.GetUserID(),
 		Name:        Category.GetName(),
 		CreatedDate: Category.GetCreatedDate(),
@@ -41,7 +41,7 @@ func (u CategoryDB) Create(Category entities.Category) error {
 }
 
 func (u CategoryDB) GetAll(userID uint32) ([]entities.Category, int64, error) {
-	var categoriesGORM []CategoryGORM
+	var categoriesGORM []categoryGORM
 	var total int64
 
 	if err := u.db.Table(u.tableName).Where("user_id = ?", userID).Count(&total).Find(&categoriesGORM).Error; err != nil {

@@ -18,7 +18,7 @@ type CategoryRepository interface {
 }
 
 var (
-	ErrCategoryNotFound = errors.New("Category not found")
+	ErrCategoryNotFound = errors.New("category not found")
 )
 
 func NewCategory(

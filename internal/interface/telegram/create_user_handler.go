@@ -8,14 +8,22 @@ import (
 )
 
 type CreateUserHandler struct {
-	uc usecase.CreateUserUseCase
+	uc  usecase.CreateUserUseCase
+	bot *tgbotapi.BotAPI
 }
 
-func NewCreateUserHandler(uc usecase.CreateUserUseCase) CreateUserHandler {
-	return CreateUserHandler{uc: uc}
+func NewCreateUserHandler(uc usecase.CreateUserUseCase, bot *tgbotapi.BotAPI) CreateUserHandler {
+	return CreateUserHandler{
+		uc:  uc,
+		bot: bot,
+	}
 }
 
 func (h *CreateUserHandler) Handle(update tgbotapi.Update) {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Добро пожаловать! Выберите действие:")
+	msg.ReplyMarkup = GetMainMenuKeyboard()
+	h.bot.Send(msg)
+
 	input := usecase.CreateUserInput{
 		TelegramID: uint32(update.Message.From.ID),
 		Name:       update.Message.From.UserName,

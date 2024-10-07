@@ -27,9 +27,11 @@ func NewBot(cfg *config.Config, db *gorm.DB) (*Bot, error) {
 	}
 
 	userRepo := repo.NewUserDB(db)
+	categoryRepo := repo.NewCategoryDB(db)
 	createUserUC := usecase.NewCreateUserUseCase(userRepo)
+	createCategoryUC := usecase.NewCreateCategoryUseCase(categoryRepo, userRepo)
 
-	messageHandler := NewMessageHandler(botAPI, createUserUC)
+	messageHandler := NewMessageHandler(botAPI, createUserUC, createCategoryUC)
 
 	return &Bot{
 		api:            botAPI,
