@@ -12,7 +12,7 @@ import (
 
 type Bot struct {
 	api            *tgbotapi.BotAPI
-	messageHandler MessageHandler
+	messageHandler *MessageHandler
 }
 
 func NewBot(cfg *config.Config, db *gorm.DB) (*Bot, error) {
@@ -35,7 +35,7 @@ func NewBot(cfg *config.Config, db *gorm.DB) (*Bot, error) {
 
 	return &Bot{
 		api:            botAPI,
-		messageHandler: messageHandler,
+		messageHandler: &messageHandler,
 	}, nil
 }
 

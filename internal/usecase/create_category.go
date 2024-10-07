@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"NoteKeeperBot/internal/entities"
-	"log"
 	"time"
 )
 
@@ -39,10 +38,7 @@ func (uc CreateCategoryUseCase) CreateCategory(input CreateCategoryInput) error 
 	)
 	err = uc.categoryRepo.Create(category)
 	if err != nil {
-		log.Printf("Failed to create Category: %v", err) // убрать
 		return err
 	}
-
-	log.Printf("Category %s created successfully", category.GetName()) // убрать
 	return nil
 }
