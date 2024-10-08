@@ -11,6 +11,7 @@ type MessageHandler struct {
 	bot                   *tgbotapi.BotAPI
 	createUserHandler     CreateUserHandler
 	createCategoryHandler CreateCategoryHandler
+	deleteCategoryHandler DeleteCategoryHandler
 	userComands           sync.Map
 }
 
@@ -18,13 +19,16 @@ func NewMessageHandler(
 	bot *tgbotapi.BotAPI,
 	createUserUC usecase.CreateUserUseCase,
 	createCategoryUC usecase.CreateCategoryUseCase,
+	deleteCategoryUC usecase.DeleteCategoryUseCase,
 ) MessageHandler {
 	createUserHandler := NewCreateUserHandler(createUserUC, bot)
 	createCategoryHandler := NewCreateCategoryHandler(createCategoryUC, bot)
+	deleteCategoryHandler := NewDeleteCategoryHandler(deleteCategoryUC, bot)
 	return MessageHandler{
 		bot:                   bot,
 		createUserHandler:     createUserHandler,
 		createCategoryHandler: createCategoryHandler,
+		deleteCategoryHandler: deleteCategoryHandler,
 	}
 }
 
@@ -56,12 +60,18 @@ func (mh *MessageHandler) handleCommand(update tgbotapi.Update) {
 func (mh *MessageHandler) handleTextMessage(update tgbotapi.Update) {
 	lastCommand, ok := mh.userComands.Load(update.Message.From.ID)
 	if update.Message.Text != "" {
-		if ok && lastCommand == "add_category" {
-			mh.createCategoryHandler.Handle(update)
-			mh.userComands.Delete(update.Message.From.ID)
-		} else if ok && lastCommand == "delete_category" {
-			mh.createCategoryHandler.Handle(update)
-			mh.userComands.Delete(update.Message.From.ID)
+		if ok {
+			switch lastCommand.(string) {
+			case "add_category":
+				mh.createCategoryHandler.Handle(update)
+				mh.userComands.Delete(update.Message.From.ID)
+			case "delete_category":
+				mh.deleteCategoryHandler.Handle(update)
+				mh.userComands.Delete(update.Message.From.ID)
+			}
+		} else {
+			// FIND ALL ДЛЯ ДОБАВЛЕНИЯ КАТЕГОРИЙ
+			// ПОСМОТРЕТЬ ЧАТ ГПТ (INLINE КНОПКИ)
 		}
 	}
 }

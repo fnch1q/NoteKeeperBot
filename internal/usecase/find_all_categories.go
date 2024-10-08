@@ -5,21 +5,28 @@ import (
 )
 
 type FindAllCategoriesInput struct {
-	UserID uint32
+	TelegramID uint32
 }
 
 type FindAllCategoriesUsecase struct {
 	categoryRepo entities.CategoryRepository
+	userRepo     entities.UserRepository
 }
 
-func NewFindAllCategoriesUseCase(categoryRepo entities.CategoryRepository) FindAllCategoriesUsecase {
+func NewFindAllCategoriesUseCase(categoryRepo entities.CategoryRepository, userRepo entities.UserRepository) FindAllCategoriesUsecase {
 	return FindAllCategoriesUsecase{
 		categoryRepo: categoryRepo,
+		userRepo:     userRepo,
 	}
 }
 
 func (uc FindAllCategoriesUsecase) FindAllCategories(input FindAllCategoriesInput) ([]entities.Category, int64, error) {
-	categories, total, err := uc.categoryRepo.FindAll(input.UserID)
+	user, err := uc.userRepo.GetByTelegramID(input.TelegramID)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	categories, total, err := uc.categoryRepo.FindAll(user.GetID())
 	if err != nil {
 		return nil, 0, err
 	}
