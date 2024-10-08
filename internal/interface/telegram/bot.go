@@ -31,8 +31,9 @@ func NewBot(cfg *config.Config, db *gorm.DB) (*Bot, error) {
 	createUserUC := usecase.NewCreateUserUseCase(userRepo)
 	createCategoryUC := usecase.NewCreateCategoryUseCase(categoryRepo, userRepo)
 	deleteCategoryUC := usecase.NewDeleteCategoryUseCase(categoryRepo, userRepo)
+	findAllCategoryUC := usecase.NewFindAllCategoriesUseCase(categoryRepo, userRepo)
 
-	messageHandler := NewMessageHandler(botAPI, createUserUC, createCategoryUC, deleteCategoryUC)
+	messageHandler := NewMessageHandler(botAPI, createUserUC, createCategoryUC, deleteCategoryUC, findAllCategoryUC)
 
 	return &Bot{
 		api:            botAPI,

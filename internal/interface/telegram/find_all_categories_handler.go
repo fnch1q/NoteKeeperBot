@@ -20,7 +20,7 @@ func NewFindAllCategoriesHandler(uc usecase.FindAllCategoriesUsecase, bot *tgbot
 	}
 }
 
-func (h *FindAllCategoriesHandler) Handle(update tgbotapi.Update) ([]string, int64) {
+func (h *FindAllCategoriesHandler) Handle(update tgbotapi.Update) {
 	chatID := update.Message.Chat.ID
 
 	input := usecase.FindAllCategoriesInput{
@@ -31,16 +31,29 @@ func (h *FindAllCategoriesHandler) Handle(update tgbotapi.Update) ([]string, int
 	if err != nil {
 		log.Printf("Failed to find categories: %v", err)
 		h.bot.Send(tgbotapi.NewMessage(chatID, fmt.Sprintf("Ошибка при получении категорий. %v", err)))
+		return
 	} else {
 		log.Printf("Found %d categories", total)
-		h.bot.Send(tgbotapi.NewMessage(chatID, "Ваши категории:!"))
 	}
 
-	categoryNames := make([]string, 0, len(categories))
+	if total == 0 {
+		h.bot.Send(tgbotapi.NewMessage(chatID, "У вас ещё нет категорий!"))
+		return
+	}
+
+	var buttons [][]tgbotapi.InlineKeyboardButton
 	for _, category := range categories {
-		categoryNames = append(categoryNames, category.GetName())
+		// Создаем кнопку для каждой категории
+		btn := tgbotapi.NewInlineKeyboardButtonData(category.GetName(), fmt.Sprintf("category:%d", category.GetID()))
+		buttons = append(buttons, tgbotapi.NewInlineKeyboardRow(btn))
 	}
 
-	return categoryNames, total
+	// Создаем inline-клавиатуру
+	keyboard := tgbotapi.NewInlineKeyboardMarkup(buttons...)
+
+	// Отправляем сообщение с inline-кнопками
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Ваши категории:")
+	msg.ReplyMarkup = keyboard
+	h.bot.Send(msg)
 
 }

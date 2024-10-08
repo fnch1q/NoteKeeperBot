@@ -8,11 +8,12 @@ import (
 )
 
 type MessageHandler struct {
-	bot                   *tgbotapi.BotAPI
-	createUserHandler     CreateUserHandler
-	createCategoryHandler CreateCategoryHandler
-	deleteCategoryHandler DeleteCategoryHandler
-	userComands           sync.Map
+	bot                      *tgbotapi.BotAPI
+	createUserHandler        CreateUserHandler
+	createCategoryHandler    CreateCategoryHandler
+	deleteCategoryHandler    DeleteCategoryHandler
+	findAllCategoriesHandler FindAllCategoriesHandler
+	userComands              sync.Map
 }
 
 func NewMessageHandler(
@@ -20,15 +21,18 @@ func NewMessageHandler(
 	createUserUC usecase.CreateUserUseCase,
 	createCategoryUC usecase.CreateCategoryUseCase,
 	deleteCategoryUC usecase.DeleteCategoryUseCase,
+	findAllCategoryUC usecase.FindAllCategoriesUsecase,
 ) MessageHandler {
 	createUserHandler := NewCreateUserHandler(createUserUC, bot)
 	createCategoryHandler := NewCreateCategoryHandler(createCategoryUC, bot)
 	deleteCategoryHandler := NewDeleteCategoryHandler(deleteCategoryUC, bot)
+	findAllCategoryHandler := NewFindAllCategoriesHandler(findAllCategoryUC, bot)
 	return MessageHandler{
-		bot:                   bot,
-		createUserHandler:     createUserHandler,
-		createCategoryHandler: createCategoryHandler,
-		deleteCategoryHandler: deleteCategoryHandler,
+		bot:                      bot,
+		createUserHandler:        createUserHandler,
+		createCategoryHandler:    createCategoryHandler,
+		deleteCategoryHandler:    deleteCategoryHandler,
+		findAllCategoriesHandler: findAllCategoryHandler,
 	}
 }
 
@@ -70,8 +74,10 @@ func (mh *MessageHandler) handleTextMessage(update tgbotapi.Update) {
 				mh.userComands.Delete(update.Message.From.ID)
 			}
 		} else {
-			// FIND ALL ДЛЯ ДОБАВЛЕНИЯ КАТЕГОРИЙ
-			// ПОСМОТРЕТЬ ЧАТ ГПТ (INLINE КНОПКИ)
+			switch update.Message.Text {
+			case "📄 Мои заметки":
+				mh.findAllCategoriesHandler.Handle(update)
+			}
 		}
 	}
 }
