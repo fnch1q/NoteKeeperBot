@@ -47,6 +47,9 @@ func (mh *MessageHandler) handleCommand(update tgbotapi.Update) {
 		// Сохраняем команду для пользователя
 		mh.userComands.Store(update.Message.From.ID, "add_category")
 		mh.bot.Send(tgbotapi.NewMessage(update.Message.From.ID, "Пожалуйста, введите текстовое название категории."))
+	case "delete_category":
+		mh.userComands.Store(update.Message.From.ID, "delete_category")
+		mh.bot.Send(tgbotapi.NewMessage(update.Message.From.ID, "Пожалуйста, введите текстовое название категории."))
 	}
 }
 
@@ -54,6 +57,9 @@ func (mh *MessageHandler) handleTextMessage(update tgbotapi.Update) {
 	lastCommand, ok := mh.userComands.Load(update.Message.From.ID)
 	if update.Message.Text != "" {
 		if ok && lastCommand == "add_category" {
+			mh.createCategoryHandler.Handle(update)
+			mh.userComands.Delete(update.Message.From.ID)
+		} else if ok && lastCommand == "delete_category" {
 			mh.createCategoryHandler.Handle(update)
 			mh.userComands.Delete(update.Message.From.ID)
 		}
